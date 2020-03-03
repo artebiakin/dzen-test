@@ -1,0 +1,14 @@
+{
+  "app": {
+    "ip_address": "IP Address",
+    "get_information": "Get information",
+    "result": "Result",
+    "continent-code": "Continent/code",
+    "country-code": "Country/code",
+    "city": "City",
+    "postcode": "Postcode",
+    "coordinates": "Coordinates",
+    "history": "History",
+    "clear_history": "Clear history"
+  }
+}

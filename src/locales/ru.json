@@ -1,0 +1,14 @@
+{
+  "app": {
+    "ip_address": "IP адрес",
+    "get_information": "Получить информацию",
+    "result": "Результат запроса",
+    "continent-code": "Континент/код континета",
+    "country-code": "Страна/код страны",
+    "city": "Город",
+    "postcode": "Почтовый индекс",
+    "coordinates": "Координаты",
+    "history": "История",
+    "clear_history": "Очистить историю"
+  }
+}

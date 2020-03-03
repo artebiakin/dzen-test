@@ -4,20 +4,20 @@
     <div class="window">
       <section>
         <form @submit.prevent="onSubmit">
-          <h3>IP Address</h3>
+          <h3>{{ $t('app.ip_address') }}</h3>
           <input pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" placeholder="000.000.00.00" />
-          <div class="btn">Get information</div>
+          <div class="btn">{{ $t('app.get_information') }}</div>
         </form>
       </section>
       <section>
-        <h3>Result</h3>
+        <h3>{{ $t('app.result') }}</h3>
         <div class="grid">
-          <div>IP address</div>
-          <div>Continent/code</div>
-          <div>Country/code</div>
-          <div>City</div>
-          <div>Postcode</div>
-          <div>Coordinates</div>
+          <div>{{ $t('app.ip_address') }}</div>
+          <div>{{ $t('app.continent-code') }}</div>
+          <div>{{ $t('app.country-code') }}</div>
+          <div>{{ $t('app.city') }}</div>
+          <div>{{ $t('app.postcode') }}</div>
+          <div>{{ $t('app.coordinates') }}</div>
           <div>000.000.00.00</div>
           <div></div>
           <div></div>
@@ -27,16 +27,16 @@
         </div>
       </section>
       <section>
-        <h3>History</h3>
+        <h3>{{ $t('app.history') }}</h3>
         <div class="grid">
-          <div>IP address</div>
-          <div>Country/code</div>
-          <div>City</div>
+          <div>{{ $t('app.ip_address') }}</div>
+          <div>{{ $t('app.country-code') }}</div>
+          <div>{{ $t('app.city') }}</div>
           <div>000.000.00.00</div>
           <div></div>
           <div></div>
         </div>
-        <div class="btn btn-disabled">Clear history</div>
+        <div class="btn btn-disabled">{{ $t('app.clear_history') }}</div>
       </section>
     </div>
   </div>

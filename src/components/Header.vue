@@ -5,7 +5,7 @@
       <div class="col logo">GeoIP</div>
       <div class="col">
         <div class="switch">
-          <span>EN</span>
+          <span>{{ currentLanguage }}</span>
           <svg
             width="10"
             height="7"
@@ -18,8 +18,8 @@
           </svg>
           <div class="switch--active">
             <ul>
-              <li>RU</li>
-              <li class="active">EN</li>
+              <li @click="switchLanguage('ru')" :class="{ active: currentLanguage == 'ru' }">RU</li>
+              <li @click="switchLanguage('en')" :class="{ active: currentLanguage == 'en' }">EN</li>
             </ul>
           </div>
         </div>
@@ -27,6 +27,27 @@
     </div>
   </header>
 </template>
+
+<script>
+import i18n from '@/i18n';
+
+export default {
+  data() {
+    return {
+      currentLanguage: String,
+    };
+  },
+  methods: {
+    switchLanguage(lang) {
+      i18n.locale = lang;
+      this.currentLanguage = i18n.locale;
+    },
+  },
+  mounted() {
+    this.currentLanguage = i18n.locale;
+  },
+};
+</script>
 
 <style lang="scss">
 header {
@@ -103,6 +124,7 @@ header {
         font-size: 18px;
         line-height: 25px;
         margin-right: 4px;
+        text-transform: uppercase;
       }
     }
   }
