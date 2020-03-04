@@ -9,8 +9,10 @@ Vue.use(VueApollo);
 const AUTH_TOKEN = 'apollo-token';
 
 // Http endpoint
+// const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://graphloc.com/';
 const httpEndpoint =
-  process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.everbase.co/graphql?apikey=[KEY]';
+  // process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.everbase.co/graphql?apikey=alpha';
+  process.env.VUE_APP_GRAPHQL_HTTP || 'https://graphql-pokemon.now.sh';
 
 // Config
 const defaultOptions = {

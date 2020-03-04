@@ -3,12 +3,19 @@
     <header-component />
     <div class="window">
       <section>
-        <form @submit.prevent="onSubmit">
+        <form>
           <h3>{{ $t('app.ip_address') }}</h3>
-          <input pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" placeholder="000.000.00.00" />
-          <div class="btn">{{ $t('app.get_information') }}</div>
+          <the-mask
+            mask="###.###.##.##"
+            placeholder="000.000.00.00"
+            v-model="ip"
+            :masked="true"
+            id="input-ip"
+          />
+          <div class="btn" type="submit" @click="getIP">{{ $t('app.get_information') }}</div>
         </form>
       </section>
+      {{ $store.getters.result }}
       <section>
         <h3>{{ $t('app.result') }}</h3>
         <div class="grid">
@@ -18,12 +25,13 @@
           <div>{{ $t('app.city') }}</div>
           <div>{{ $t('app.postcode') }}</div>
           <div>{{ $t('app.coordinates') }}</div>
-          <div>000.000.00.00</div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+          <div v-if="this.geolocation.ip">{{ this.geolocation.ip }}</div>
+          <div v-else>000.000.00.00</div>
+          <div>{{ geolocation.continent_code }}</div>
+          <div>{{ geolocation.country_code }}</div>
+          <div>{{ geolocation.city }}</div>
+          <div>{{ geolocation.postcode }}</div>
+          <div>{{ geolocation.coordinates }}</div>
         </div>
       </section>
       <section>
@@ -45,16 +53,53 @@
 <script>
 // import gql from 'graphql-tag';
 import Header from './components/Header.vue';
+import { TheMask } from 'vue-the-mask';
 
 export default {
   name: 'App',
-
-  apollo: {},
   data() {
-    return {};
+    return {
+      ip: '',
+      pattern: /^[0-9]{3}.[0-9]{3}.[0-9]{2}.[0-9]{2}$/,
+      geolocation: {
+        ip: '',
+        continent_code: '',
+        country_code: '',
+        city: '',
+        postcode: '',
+        coordinates: '',
+      },
+    };
   },
   components: {
     'header-component': Header,
+    'the-mask': TheMask,
+  },
+  methods: {
+    getIP() {
+      if (this.pattern.test(this.ip)) {
+        document.querySelector('#input-ip').classList.remove('error');
+        // this.$apollo.queries.pokemon.setVariables({
+        //   name: 'Pikachu',
+        // });
+        // this.$apollo.queries.pokemon.refresh();
+
+        // this.$apollo.queries.geolocation.setVariables({
+        //   ip: this.ip,
+        // });
+        // this.$apollo.queries.geolocation.refresh();
+        this.geolocation.ip = this.ip;
+        this.geolocation.continent_code = 'Europe/EU' || '/iso_code';
+        this.geolocation.country_code = 'Italy/IT' || '';
+        this.geolocation.city = '–';
+        this.geolocation.postcode = '–';
+        this.geolocation.coordinates =
+          '45.2/9.1' || 'geolocation.location.latitude/geolocation.location.longitude';
+      } else {
+        document.querySelector('#input-ip').classList.add('error');
+      }
+    },
+    pushHistory() {},
   },
 };
 </script>
