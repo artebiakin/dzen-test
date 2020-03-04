@@ -43,10 +43,16 @@
 </template>
 
 <script>
+// import gql from 'graphql-tag';
 import Header from './components/Header.vue';
 
 export default {
   name: 'App',
+
+  apollo: {},
+  data() {
+    return {};
+  },
   components: {
     'header-component': Header,
   },
