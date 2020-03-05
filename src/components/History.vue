@@ -15,8 +15,8 @@
         </tr>
         <tr v-for="(item, count) in $store.getters.result" :key="count">
           <td>{{ item.ip }}</td>
-          <td>{{ item.country_code }}</td>
-          <td>{{ item.city }}</td>
+          <td>{{ item.country_code[currentLanguage] }}</td>
+          <td>{{ item.city[currentLanguage] }}</td>
         </tr>
       </table>
     </div>
@@ -33,6 +33,7 @@
 
 <script>
 export default {
+  props: ['currentLanguage'],
   methods: {
     clearHistory() {
       if (this.$store.getters.isContains) this.$store.dispatch('clearHistory');

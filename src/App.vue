@@ -10,8 +10,9 @@
         :city="geolocation.city"
         :postcode="geolocation.postcode"
         :coordinates="geolocation.coordinates"
+        :currentLanguage="currentLanguage"
       />
-      <history />
+      <history :currentLanguage="currentLanguage" />
     </div>
   </div>
 </template>
@@ -55,6 +56,12 @@ export default {
       result({ data, error }) {
         if (error) console.log('error');
         else {
+          /* 
+            Данный API не предоставляет возможность получать название городов и стран на русском языке.
+            Поэтому метод imitationLanguageSupport, создает имитацию https://graphloc.com/ и добавляет в поля
+            название "страны" и "города", поля ru и en. 
+          */
+          data = this.imitationLanguageSupport(data);
           let { country } = data.ipAddress;
           let { city } = data.ipAddress;
           if (city == null) city = {};
@@ -74,12 +81,19 @@ export default {
 
           //third column
           const { name: country_name = '–' } = country;
+          const { en: country_name_en = '–' } = country_name;
+          const { ru: country_name_ru = country_name_en } = country_name;
           const { alpha2Code: country_code = '–' } = country;
-          this.geolocation.country_code = `${country_name}/${country_code}`;
+
+          this.geolocation.country_code.ru = `${country_name_ru}/${country_code}`;
+          this.geolocation.country_code.en = `${country_name_en}/${country_code}`;
 
           //fourth column
           const { name: city_name = '–' } = city;
-          this.geolocation.city = city_name;
+          const { en: city_name_en = '–' } = city_name;
+          const { ru: city_name_ru = city_name_en } = city_name;
+          this.geolocation.city.en = city_name_en;
+          this.geolocation.city.ru = city_name_ru;
 
           //fifth column
           this.geolocation.postcode = '–';
@@ -90,6 +104,7 @@ export default {
           const { long: country_long = '–' } = location;
 
           this.geolocation.coordinates = `${country_lat}/${country_long}`;
+
           this.pushHistory(this.geolocation);
         }
       },
@@ -110,12 +125,19 @@ export default {
       geolocation: {
         ip: '',
         continent_code: '',
-        country_code: '',
-        city: '',
+        country_code: {
+          ru: '',
+          en: '',
+        },
+        city: {
+          ru: '',
+          en: '',
+        },
         postcode: '',
         coordinates: '',
       },
       continent_codes: ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'],
+      currentLanguage: 'en',
     };
   },
   methods: {
@@ -123,8 +145,19 @@ export default {
       this.address = ip;
       this.$apollo.queries.ipAddress.start();
     },
-    pushHistory({ ip, country_code, city }) {
-      this.$store.dispatch('addResult', { ip, country_code, city });
+    pushHistory(result) {
+      const data = {
+        ip: result.ip,
+        country_code: {
+          ru: result.country_code.ru,
+          en: result.country_code.en,
+        },
+        city: {
+          ru: result.city.ru,
+          en: result.city.en,
+        },
+      };
+      this.$store.dispatch('addResult', data);
     },
     getContinentCode(country) {
       switch (country) {
@@ -147,7 +180,35 @@ export default {
       }
     },
     changedLanguage(lang) {
-      alert(`Language was change on: ${lang}`);
+      this.currentLanguage = lang;
+    },
+    imitationLanguageSupport(data) {
+      if (data.ipAddress.country != null && data.ipAddress.country.name != null) {
+        const country_name = data.ipAddress.country.name;
+        let country_name_ru;
+
+        if (country_name == 'Thailand') country_name_ru = 'Таиланд';
+        else if (country_name == 'Germany') country_name_ru = 'Германия';
+        else country_name_ru = country_name;
+
+        data.ipAddress.country.name = {
+          en: country_name,
+          ru: country_name_ru,
+        };
+      }
+      if (data.ipAddress.city != null && data.ipAddress.city.name != null) {
+        const city_name = data.ipAddress.city.name;
+        let city_name_ru;
+
+        if (city_name == 'Bangkok') city_name_ru = 'Бангкок';
+        else if (city_name == 'Brunswick') city_name_ru = 'Брауншвейг';
+        else city_name_ru = city_name;
+        data.ipAddress.city.name = {
+          en: city_name,
+          ru: city_name_ru,
+        };
+      }
+      return data;
     },
   },
 };
@@ -206,7 +267,7 @@ body {
       overflow: hidden;
       margin-top: 13px;
       margin-bottom: 18px;
-      grid-template-rows: repeat(2, 34px);
+      grid-template-rows: repeat(2, auto);
       & :nth-child(n) {
         padding: 9px 18px;
         text-align: center;

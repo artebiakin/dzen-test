@@ -11,8 +11,8 @@
       <div v-if="ip">{{ ip }}</div>
       <div v-else>000.000.00.00</div>
       <div>{{ continent_code }}</div>
-      <div>{{ country_code }}</div>
-      <div>{{ city }}</div>
+      <div>{{ country_code[currentLanguage] }}</div>
+      <div>{{ city[currentLanguage] }}</div>
       <div>{{ postcode }}</div>
       <div>{{ coordinates }}</div>
     </div>
@@ -21,7 +21,15 @@
 
 <script>
 export default {
-  props: ['ip', 'continent_code', 'country_code', 'city', 'postcode', 'coordinates'],
+  props: [
+    'ip',
+    'continent_code',
+    'country_code',
+    'city',
+    'postcode',
+    'coordinates',
+    'currentLanguage',
+  ],
 };
 </script>
 
