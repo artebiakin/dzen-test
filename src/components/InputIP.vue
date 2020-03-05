@@ -2,6 +2,7 @@
   <section>
     <form>
       <h3>{{ $t('app.ip_address') }}</h3>
+      <!-- a. Поле ввода IP адреса должно иметь маску “###.###.##.##”; -->
       <the-mask
         mask="###.###.##.##"
         :masked="true"
@@ -29,11 +30,21 @@ export default {
     };
   },
   methods: {
+    /* 
+      b. Если IP адрес введен корректно, то после нажатия на кнопку “Get
+      information”, должен быть выполнен запрос на API; 
+    */
+    /* 
+      c. Если IP адрес введен некорректно, то поле ввода должно
+      изменить стиль отображения на Error (см. UI Kit у Figma);
+    */
     onSubmit() {
       if (this.pattern.test(this.ip)) {
+        //correct
         this.isError = false;
         this.$emit('onSubmit', this.ip);
       } else {
+        //incorrect
         this.isError = !this.isError;
       }
     },

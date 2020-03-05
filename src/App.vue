@@ -141,7 +141,6 @@ export default {
         postcode: '',
         coordinates: '',
       },
-      continent_codes: ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'],
       currentLanguage: 'en',
     };
   },
@@ -164,22 +163,27 @@ export default {
       };
       this.$store.dispatch('addResult', data);
     },
+    /* 
+      с*. api не предоставляет возможность получить код континента. 
+      Был создан метод, который предоставляет возможность по континенту присвоить код.
+    */
     getContinentCode(country) {
+      const continent_codes = ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'];
       switch (country) {
         case 'Africa':
-          return this.continent_codes[0];
+          return continent_codes[0];
         case 'Antarctica':
-          return this.continent_codes[1];
+          return continent_codes[1];
         case 'Asia':
-          return this.continent_codes[2];
+          return continent_codes[2];
         case 'Europe':
-          return this.continent_codes[3];
+          return continent_codes[3];
         case 'North america':
-          return this.continent_codes[4];
+          return continent_codes[4];
         case 'Oceania':
-          return this.continent_codes[5];
+          return continent_codes[5];
         case 'South america':
-          return this.continent_codes[6];
+          return continent_codes[6];
         default:
           return '–';
       }
@@ -187,6 +191,9 @@ export default {
     changedLanguage(lang) {
       this.currentLanguage = lang;
     },
+    /* 
+      f*
+    */
     imitationLanguageSupport(data) {
       if (data.ipAddress.country != null && data.ipAddress.country.name != null) {
         const country_name = data.ipAddress.country.name;
