@@ -85,8 +85,13 @@ export default {
           const { ru: country_name_ru = country_name_en } = country_name;
           const { alpha2Code: country_code = '–' } = country;
 
-          this.geolocation.country_code.ru = `${country_name_ru}/${country_code}`;
-          this.geolocation.country_code.en = `${country_name_en}/${country_code}`;
+          if (country_name_en == '–' && country_name_ru == '–') {
+            this.geolocation.country_code.ru = '–';
+            this.geolocation.country_code.en = '–';
+          } else {
+            this.geolocation.country_code.ru = `${country_name_ru}/${country_code}`;
+            this.geolocation.country_code.en = `${country_name_en}/${country_code}`;
+          }
 
           //fourth column
           const { name: city_name = '–' } = city;
@@ -102,8 +107,8 @@ export default {
           const { location = '–' } = country;
           const { lat: country_lat = '–' } = location;
           const { long: country_long = '–' } = location;
-
-          this.geolocation.coordinates = `${country_lat}/${country_long}`;
+          if (country_lat == '–' && country_long == '–') this.geolocation.coordinates = '–';
+          else this.geolocation.coordinates = `${country_lat}/${country_long}`;
 
           this.pushHistory(this.geolocation);
         }
