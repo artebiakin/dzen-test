@@ -1,0 +1,20 @@
+query ipAddress($address: String!) {
+  ipAddress(address: $address) {
+    address
+    country {
+      name
+      alpha2Code
+      location {
+        lat
+        long
+      }
+    }
+    city {
+      name
+      continent {
+        name
+        geonamesID
+      }
+    }
+  }
+}

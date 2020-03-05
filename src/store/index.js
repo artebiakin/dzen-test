@@ -5,22 +5,29 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    result: localStorage.getItem('result-history') || new Array(),
+    result: JSON.parse(localStorage.getItem('result-history')) || [],
   },
   mutations: {
     pushResult(state, result) {
-      state.result.push(result);
+      state.result.unshift(result);
+    },
+    clearResult(state) {
+      state.result = [];
     },
   },
   actions: {
-    addResult({ commit }, { result }) {
+    addResult({ commit }, result) {
       commit('pushResult', result);
-      localStorage.setItem('result-history', result);
+      localStorage.setItem('result-history', JSON.stringify(this.state.result));
+    },
+    clearHistory({ commit }) {
+      commit('clearResult');
+      localStorage.removeItem('result-history');
     },
   },
   modules: {},
   getters: {
-    isEmpty: (s) => !!s.result,
+    isContains: (s) => !!s.result.length,
     result: (s) => s.result,
   },
 });

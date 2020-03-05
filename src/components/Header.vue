@@ -41,9 +41,12 @@ export default {
     switchLanguage(lang) {
       i18n.locale = lang;
       this.currentLanguage = i18n.locale;
+      this.$emit('changedLanguage', this.currentLanguage);
     },
   },
   mounted() {
+    console.log(i18n);
+
     this.currentLanguage = i18n.locale;
   },
 };

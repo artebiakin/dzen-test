@@ -1,66 +1,112 @@
 <template>
   <div id="app">
-    <header-component />
+    <header-component @changedLanguage="changedLanguage" />
     <div class="window">
-      <section>
-        <form>
-          <h3>{{ $t('app.ip_address') }}</h3>
-          <the-mask
-            mask="###.###.##.##"
-            placeholder="000.000.00.00"
-            v-model="ip"
-            :masked="true"
-            id="input-ip"
-          />
-          <div class="btn" type="submit" @click="getIP">{{ $t('app.get_information') }}</div>
-        </form>
-      </section>
-      {{ $store.getters.result }}
-      <section>
-        <h3>{{ $t('app.result') }}</h3>
-        <div class="grid">
-          <div>{{ $t('app.ip_address') }}</div>
-          <div>{{ $t('app.continent-code') }}</div>
-          <div>{{ $t('app.country-code') }}</div>
-          <div>{{ $t('app.city') }}</div>
-          <div>{{ $t('app.postcode') }}</div>
-          <div>{{ $t('app.coordinates') }}</div>
-          <div v-if="this.geolocation.ip">{{ this.geolocation.ip }}</div>
-          <div v-else>000.000.00.00</div>
-          <div>{{ geolocation.continent_code }}</div>
-          <div>{{ geolocation.country_code }}</div>
-          <div>{{ geolocation.city }}</div>
-          <div>{{ geolocation.postcode }}</div>
-          <div>{{ geolocation.coordinates }}</div>
-        </div>
-      </section>
-      <section>
-        <h3>{{ $t('app.history') }}</h3>
-        <div class="grid">
-          <div>{{ $t('app.ip_address') }}</div>
-          <div>{{ $t('app.country-code') }}</div>
-          <div>{{ $t('app.city') }}</div>
-          <div>000.000.00.00</div>
-          <div></div>
-          <div></div>
-        </div>
-        <div class="btn btn-disabled">{{ $t('app.clear_history') }}</div>
-      </section>
+      <input-ip @onSubmit="setIP" />
+      <result
+        :ip="geolocation.ip"
+        :continent_code="geolocation.continent_code"
+        :country_code="geolocation.country_code"
+        :city="geolocation.city"
+        :postcode="geolocation.postcode"
+        :coordinates="geolocation.coordinates"
+      />
+      <history />
     </div>
   </div>
 </template>
 
 <script>
-// import gql from 'graphql-tag';
+import gql from 'graphql-tag';
 import Header from './components/Header.vue';
-import { TheMask } from 'vue-the-mask';
+import InputIP from './components/InputIP.vue';
+import Result from './components/Result.vue';
+import History from './components/History.vue';
 
 export default {
-  name: 'App',
+  apollo: {
+    ipAddress: {
+      query: gql`
+        query ipAddress($address: String!) {
+          ipAddress(address: $address) {
+            address
+            country {
+              name
+              alpha2Code
+              location {
+                lat
+                long
+              }
+            }
+            city {
+              name
+              continent {
+                name
+              }
+            }
+          }
+        }
+      `,
+      variables() {
+        return {
+          address: this.address,
+        };
+      },
+      result({ data, error }) {
+        if (error) console.log('error');
+        else {
+          let { country } = data.ipAddress;
+          let { city } = data.ipAddress;
+          if (city == null) city = {};
+          if (country == null) country = {};
+
+          //first column
+          this.geolocation.ip = data.ipAddress.address;
+
+          //second column
+          const { continent = '–' } = city;
+          const { name: continent_name = '–' } = continent;
+          if (continent_name == '–') this.geolocation.continent_code = '–';
+          else {
+            const continent_code = this.getContinentCode(continent_name);
+            this.geolocation.continent_code = `${continent_name}/${continent_code}`;
+          }
+
+          //third column
+          const { name: country_name = '–' } = country;
+          const { alpha2Code: country_code = '–' } = country;
+          this.geolocation.country_code = `${country_name}/${country_code}`;
+
+          //fourth column
+          const { name: city_name = '–' } = city;
+          this.geolocation.city = city_name;
+
+          //fifth column
+          this.geolocation.postcode = '–';
+
+          //sixth column
+          const { location = '–' } = country;
+          const { lat: country_lat = '–' } = location;
+          const { long: country_long = '–' } = location;
+
+          this.geolocation.coordinates = `${country_lat}/${country_long}`;
+          this.pushHistory(this.geolocation);
+        }
+      },
+      skip() {
+        return this.skipQuery;
+      },
+    },
+  },
+  components: {
+    'header-component': Header,
+    'input-ip': InputIP,
+    Result,
+    History,
+  },
   data() {
     return {
-      ip: '',
-      pattern: /^[0-9]{3}.[0-9]{3}.[0-9]{2}.[0-9]{2}$/,
+      address: '',
       geolocation: {
         ip: '',
         continent_code: '',
@@ -69,43 +115,45 @@ export default {
         postcode: '',
         coordinates: '',
       },
+      continent_codes: ['AF', 'AN', 'AS', 'EU', 'NA', 'OC', 'SA'],
     };
   },
-  components: {
-    'header-component': Header,
-    'the-mask': TheMask,
-  },
   methods: {
-    getIP() {
-      if (this.pattern.test(this.ip)) {
-        document.querySelector('#input-ip').classList.remove('error');
-        // this.$apollo.queries.pokemon.setVariables({
-        //   name: 'Pikachu',
-        // });
-        // this.$apollo.queries.pokemon.refresh();
-
-        // this.$apollo.queries.geolocation.setVariables({
-        //   ip: this.ip,
-        // });
-        // this.$apollo.queries.geolocation.refresh();
-        this.geolocation.ip = this.ip;
-        this.geolocation.continent_code = 'Europe/EU' || '/iso_code';
-        this.geolocation.country_code = 'Italy/IT' || '';
-        this.geolocation.city = '–';
-        this.geolocation.postcode = '–';
-        this.geolocation.coordinates =
-          '45.2/9.1' || 'geolocation.location.latitude/geolocation.location.longitude';
-      } else {
-        document.querySelector('#input-ip').classList.add('error');
+    setIP(ip) {
+      this.address = ip;
+      this.$apollo.queries.ipAddress.start();
+    },
+    pushHistory({ ip, country_code, city }) {
+      this.$store.dispatch('addResult', { ip, country_code, city });
+    },
+    getContinentCode(country) {
+      switch (country) {
+        case 'Africa':
+          return this.continent_codes[0];
+        case 'Antarctica':
+          return this.continent_codes[1];
+        case 'Asia':
+          return this.continent_codes[2];
+        case 'Europe':
+          return this.continent_codes[3];
+        case 'North america':
+          return this.continent_codes[4];
+        case 'Oceania':
+          return this.continent_codes[5];
+        case 'South america':
+          return this.continent_codes[6];
+        default:
+          return '–';
       }
     },
-    pushHistory() {},
+    changedLanguage(lang) {
+      alert(`Language was change on: ${lang}`);
+    },
   },
 };
 </script>
 
 <style lang="scss">
-@import '@/assets/scss/ui-kit.scss';
 body {
   min-width: 1280px;
   max-width: 2560px;
@@ -168,37 +216,6 @@ body {
         font-weight: normal;
         font-size: 12px;
         line-height: 16px;
-      }
-    }
-  }
-  & :nth-child(2) {
-    & .grid {
-      grid-template-columns: repeat(6, auto);
-      & :nth-child(-n + 6) {
-        background-color: #656bf2;
-      }
-      & :nth-child(n + 7):nth-child(n) {
-        color: #969696;
-      }
-      & :nth-child(n + 8):nth-child(n) {
-        border-left: 1px solid #cccccc;
-        color: #969696;
-      }
-    }
-  }
-  & :nth-child(3) {
-    & .grid {
-      width: 50%;
-      grid-template-columns: repeat(3, auto);
-      & :nth-child(-n + 3) {
-        background-color: #656bf2;
-      }
-      & :nth-child(n + 4):nth-child(n) {
-        color: #969696;
-      }
-      & :nth-child(n + 5):nth-child(n) {
-        border-left: 1px solid #cccccc;
-        color: #969696;
       }
     }
   }

@@ -12,7 +12,7 @@ const AUTH_TOKEN = 'apollo-token';
 // const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://graphloc.com/';
 const httpEndpoint =
   // process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.everbase.co/graphql?apikey=alpha';
-  process.env.VUE_APP_GRAPHQL_HTTP || 'https://graphql-pokemon.now.sh';
+  process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.everbase.co/graphql?apikey=alpha';
 
 // Config
 const defaultOptions = {

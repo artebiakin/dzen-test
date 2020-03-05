@@ -17,13 +17,18 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  &-disabled {
-    background-color: #e6e6e6;
-  }
   &:hover {
     opacity: 1;
     background: #ff6c6c;
     box-shadow: 0px 0px 20px rgba(255, 108, 108, 0.7);
+  }
+  &-disabled {
+    background-color: #e6e6e6;
+    &:hover {
+      background-color: #e6e6e6;
+      box-shadow: none;
+      opacity: 0.85;
+    }
   }
 }
 
