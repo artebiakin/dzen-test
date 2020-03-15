@@ -36,6 +36,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Task
 
-```
-See [Task file](https://github.com/artebiakin/dzen-test/blob/master/test.pdf)
-```
+See ([Task file](https://github.com/artebiakin/dzen-test/blob/master/test.pdf))
